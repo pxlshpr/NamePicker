@@ -49,7 +49,7 @@ extension NamePicker {
     }
 
     var textField: some View {
-        TextField("", text: $name)
+        TextField("Name", text: $name)
             .focused($isFocused, equals: true)
             .submitLabel(.done)
             .onSubmit {
@@ -62,7 +62,7 @@ extension NamePicker {
 //        Group {
 //        }
 //    }
-//    
+//
 //    var presets: some View {
 //        Group {
 //        }
