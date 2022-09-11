@@ -49,7 +49,7 @@ extension NamePicker {
     }
 
     var textField: some View {
-        TextField("Name", text: $name)
+        TextField("Enter or pick a name", text: $name)
             .focused($isFocused, equals: true)
             .submitLabel(.done)
             .onSubmit {
