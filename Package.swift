@@ -15,7 +15,7 @@ let package = Package(
             targets: ["NamePicker"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/globulus/swiftui-flow-layout", from: "1.0.5"),
+        .package(url: "https://github.com/globulus/swiftui-flow-layout", exact: "1.0.5"),
         .package(url: "https://github.com/pxlshpr/swiftuisugar", from: "0.0.169"),
     ],
     targets: [
