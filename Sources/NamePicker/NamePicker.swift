@@ -29,8 +29,20 @@ extension NamePicker {
         ScrollView {
             LazyVStack(spacing: 0) {
                 textField
-                recents
-                presets
+                if !recentStrings.isEmpty {
+                    Text("Frequently Used")
+                        .formSectionHeaderStyle()
+                    FlowLayout(mode: .scrollable, items: recentStrings, itemSpacing: 4) {
+                        button(forSuggestion: $0)
+                    }
+                    .formElementStyle()
+                }
+                Text("Presets")
+                    .formSectionHeaderStyle()
+                FlowLayout(mode: .scrollable, items: presetStrings, itemSpacing: 4) {
+                    button(forSuggestion: $0)
+                }
+                .formElementStyle()
             }
         }
         .background(Color(.systemGroupedBackground))
@@ -46,29 +58,15 @@ extension NamePicker {
             .formElementStyle()
     }
     
-    var recents: some View {
-        Group {
-            if !recentStrings.isEmpty {
-                Text("Frequently Used")
-                    .formSectionHeaderStyle()
-                FlowLayout(mode: .scrollable, items: recentStrings, itemSpacing: 4) {
-                    button(forSuggestion: $0)
-                }
-                .formElementStyle()
-            }
-        }
-    }
-    
-    var presets: some View {
-        Group {
-            Text("Presets")
-                .formSectionHeaderStyle()
-            FlowLayout(mode: .scrollable, items: presetStrings, itemSpacing: 4) {
-                button(forSuggestion: $0)
-            }
-            .formElementStyle()
-        }
-    }
+//    var recents: some View {
+//        Group {
+//        }
+//    }
+//    
+//    var presets: some View {
+//        Group {
+//        }
+//    }
 
     func button(forSuggestion string: String) -> some View {
         Button {
