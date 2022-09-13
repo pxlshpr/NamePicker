@@ -2,6 +2,51 @@ import SwiftUI
 import SwiftUISugar
 import SwiftUIFlowLayout
 
+struct TextFieldClearButton: ViewModifier {
+    @Binding var fieldText: String
+    
+    @State var showingClearButton: Bool = false
+
+    func body(content: Content) -> some View {
+        HStack {
+            content
+            if showingClearButton {
+                Spacer()
+                clearButton
+            }
+        }
+        .onChange(of: fieldText) { newValue in
+            withAnimation(.interactiveSpring()) {
+                showingClearButton = !fieldText.isEmpty
+            }
+//            if !fieldText.isEmpty && !showingClearButton {
+//                withAnimation(.interactiveSpring()) {
+//                    showingClearButton = true
+//                }
+//            } else if fieldText.isEmpty && showingClearButton {
+//                withAnimation(.interactiveSpring()) {
+//                    showingClearButton = false
+//                }
+//            }
+        }
+    }
+    
+    var clearButton: some View {
+        Button {
+            fieldText = ""
+        } label: {
+            Image(systemName: "multiply.circle.fill")
+        }
+        .foregroundColor(.secondary)
+    }
+}
+
+extension View {
+    func showClearButton(_ text: Binding<String>) -> some View {
+        self.modifier(TextFieldClearButton(fieldText: text))
+    }
+}
+
 public struct NamePicker: View {
     @Binding var name: String
     
@@ -10,12 +55,14 @@ public struct NamePicker: View {
     var recentStrings: [String]
     var presetStrings: [String]
     var lowercased: Bool
+    var showClearButton: Bool
     
-    public init(name: Binding<String>, lowercased: Bool = false, recentStrings: [String] = [], presetStrings: [String]) {
+    public init(name: Binding<String>, showClearButton: Bool = false, lowercased: Bool = false, recentStrings: [String] = [], presetStrings: [String]) {
         _name = name
         self.recentStrings = recentStrings
         self.presetStrings = presetStrings
         self.lowercased = lowercased
+        self.showClearButton = showClearButton
     }
 }
 
@@ -70,11 +117,15 @@ extension NamePicker {
             .onSubmit {
                 dismiss()
             }
-            .formElementStyle()
             .if(lowercased) { view in
                 view
                     .textInputAutocapitalization(.never)
             }
+            .if(showClearButton) { view in
+                view
+                    .showClearButton($name)
+            }
+            .formElementStyle()
     }
     
     func button(forSuggestion string: String) -> some View {
