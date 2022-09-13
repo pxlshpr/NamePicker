@@ -111,7 +111,13 @@ extension NamePicker {
     }
 
     var textField: some View {
-        TextField("Enter or pick a name", text: $name)
+        let binding = Binding<String>(get: {
+            self.name
+        }, set: {
+            self.name = lowercased ? $0.lowercased() : $0
+        })
+        
+        return TextField("Enter or pick a name", text: binding)
             .focused($isFocused, equals: true)
             .submitLabel(.done)
             .onSubmit {
