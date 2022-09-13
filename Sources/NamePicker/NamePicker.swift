@@ -73,7 +73,7 @@ extension NamePicker {
             .formElementStyle()
             .if(lowercased) { view in
                 view
-                    .textCase(.lowercase)
+                    .textInputAutocapitalization(.never)
             }
     }
     
