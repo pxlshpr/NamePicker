@@ -3,18 +3,19 @@ import SwiftUISugar
 import SwiftUIFlowLayout
 
 public struct NamePicker: View {
-//    @EnvironmentObject var diaryController: DiaryView.Controller
-    @Environment(\.dismiss) var dismiss
-    @FocusState var isFocused: Bool?
     @Binding var name: String
     
+    @Environment(\.dismiss) var dismiss
+    @FocusState private var isFocused: Bool?
     var recentStrings: [String]
     var presetStrings: [String]
+    var lowercased: Bool
     
-    public init(name: Binding<String>, recentStrings: [String] = [], presetStrings: [String]) {
+    public init(name: Binding<String>, lowercased: Bool = false, recentStrings: [String] = [], presetStrings: [String]) {
         _name = name
         self.recentStrings = recentStrings
         self.presetStrings = presetStrings
+        self.lowercased = lowercased
     }
 }
 
@@ -25,6 +26,20 @@ extension NamePicker {
             .navigationBarTitleDisplayMode(.inline)
     }
     
+    var formattedRecentStrings: [String] {
+        guard lowercased else {
+            return recentStrings
+        }
+        return recentStrings.map { $0.lowercased() }
+    }
+    
+    var formattedPresetStrings: [String] {
+        guard lowercased else {
+            return presetStrings
+        }
+        return presetStrings.map { $0.lowercased() }
+    }
+
     var scrollView: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
@@ -32,14 +47,14 @@ extension NamePicker {
                 if !recentStrings.isEmpty {
                     Text("Frequently Used")
                         .formSectionHeaderStyle()
-                    FlowLayout(mode: .scrollable, items: recentStrings, itemSpacing: 4) {
+                    FlowLayout(mode: .scrollable, items: formattedRecentStrings, itemSpacing: 4) {
                         button(forSuggestion: $0)
                     }
                     .formElementStyle()
                 }
                 Text("Presets")
                     .formSectionHeaderStyle()
-                FlowLayout(mode: .scrollable, items: presetStrings, itemSpacing: 4) {
+                FlowLayout(mode: .scrollable, items: formattedPresetStrings, itemSpacing: 4) {
                     button(forSuggestion: $0)
                 }
                 .formElementStyle()
@@ -56,18 +71,12 @@ extension NamePicker {
                 dismiss()
             }
             .formElementStyle()
+            .if(lowercased) { view in
+                view
+                    .textCase(.lowercase)
+            }
     }
     
-//    var recents: some View {
-//        Group {
-//        }
-//    }
-//
-//    var presets: some View {
-//        Group {
-//        }
-//    }
-
     func button(forSuggestion string: String) -> some View {
         Button {
             name = string
