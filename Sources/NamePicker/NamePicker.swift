@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftUISugar
 import SwiftUIFlowLayout
+import SwiftHaptics
 
 struct TextFieldClearButton: ViewModifier {
     @Binding var fieldText: String
@@ -121,7 +122,7 @@ extension NamePicker {
             .focused($isFocused, equals: true)
             .submitLabel(.done)
             .onSubmit {
-                dismiss()
+                dismissForm()
             }
             .if(lowercased) { view in
                 view
@@ -137,7 +138,7 @@ extension NamePicker {
     func button(forSuggestion string: String) -> some View {
         Button {
             name = string
-            dismiss()
+            dismissForm()
         } label: {
             Text(string)
               .foregroundColor(Color(.secondaryLabel))
@@ -148,5 +149,10 @@ extension NamePicker {
                       .fill(Color(.secondarySystemFill))
               )
         }
+    }
+    
+    func dismissForm() {
+        Haptics.feedback(style: .heavy)
+        dismiss()
     }
 }
