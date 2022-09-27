@@ -8,6 +8,11 @@ struct TextFieldClearButton: ViewModifier {
     
     @State var showingClearButton: Bool = false
 
+    init(fieldText: Binding<String>) {
+        _fieldText = fieldText
+        self.showingClearButton = !fieldText.wrappedValue.isEmpty
+    }
+    
     func body(content: Content) -> some View {
         HStack {
             content
