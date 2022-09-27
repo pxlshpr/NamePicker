@@ -6,11 +6,11 @@ import SwiftHaptics
 struct TextFieldClearButton: ViewModifier {
     @Binding var fieldText: String
     
-    @State var showingClearButton: Bool = false
+    @State var showingClearButton: Bool
 
     init(fieldText: Binding<String>) {
         _fieldText = fieldText
-        self.showingClearButton = !fieldText.wrappedValue.isEmpty
+        _showingClearButton = State(initialValue: !fieldText.wrappedValue.isEmpty)
     }
     
     func body(content: Content) -> some View {
