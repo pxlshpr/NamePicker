@@ -15,8 +15,7 @@ let package = Package(
             targets: ["NamePicker"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/globulus/swiftui-flow-layout", exact: "1.0.5"),
-        .package(url: "https://github.com/pxlshpr/swiftuisugar", from: "0.0.169"),
+        .package(url: "https://github.com/pxlshpr/swiftuisugar", from: "0.0.170"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -24,7 +23,6 @@ let package = Package(
         .target(
             name: "NamePicker",
             dependencies: [
-                .product(name: "SwiftUIFlowLayout", package: "swiftui-flow-layout"),
                 .product(name: "SwiftUISugar", package: "swiftuisugar"),
             ]),
         .testTarget(

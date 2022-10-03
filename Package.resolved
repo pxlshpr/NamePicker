@@ -19,21 +19,12 @@
       }
     },
     {
-      "identity" : "swiftui-flow-layout",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/globulus/swiftui-flow-layout",
-      "state" : {
-        "revision" : "de7da3440c3b87ba94adfa98c698828d7746a76d",
-        "version" : "1.0.5"
-      }
-    },
-    {
       "identity" : "swiftuisugar",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pxlshpr/swiftuisugar",
       "state" : {
-        "revision" : "e0222ce74a9b3b549e02076b2552af282300ae3e",
-        "version" : "0.0.169"
+        "revision" : "b3fe8ecbd0cd4441e73eba0f55d38d9c736d213e",
+        "version" : "0.0.170"
       }
     }
   ],
