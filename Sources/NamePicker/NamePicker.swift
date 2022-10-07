@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftUISugar
 import SwiftHaptics
+import Introspect
 
 struct TextFieldClearButton: ViewModifier {
     @Binding var fieldText: String
@@ -57,17 +58,29 @@ public struct NamePicker: View {
     
     @Environment(\.dismiss) var dismiss
     @FocusState private var isFocused: Bool?
-    var recentStrings: [String]
-    var presetStrings: [String]
-    var lowercased: Bool
-    var showClearButton: Bool
-    
-    public init(name: Binding<String>, showClearButton: Bool = false, lowercased: Bool = false, recentStrings: [String] = [], presetStrings: [String]) {
+    let recentStrings: [String]
+    let presetStrings: [String]
+    let lowercased: Bool
+    let showClearButton: Bool
+    let focusImmediately: Bool
+
+    @State var uiTextField: UITextField? = nil
+    @State var hasBecomeFirstResponder: Bool = false
+
+    public init(
+        name: Binding<String>,
+        showClearButton: Bool = false,
+        focusImmediately: Bool = false,
+        lowercased: Bool = false,
+        recentStrings: [String] = [],
+        presetStrings: [String])
+    {
         _name = name
         self.recentStrings = recentStrings
         self.presetStrings = presetStrings
         self.lowercased = lowercased
         self.showClearButton = showClearButton
+        self.focusImmediately = focusImmediately
     }
 }
 
@@ -76,6 +89,21 @@ extension NamePicker {
         scrollView
             .navigationTitle("Name")
             .navigationBarTitleDisplayMode(.inline)
+            .introspectTextField(customize: introspectTextField)
+    }
+    
+    /// We're using this to focus the textfield seemingly before this view even appears (as the `.onAppear` modifier—shows the keyboard coming up with an animation
+    func introspectTextField(_ uiTextField: UITextField) {
+        guard focusImmediately, self.uiTextField == nil, !hasBecomeFirstResponder else {
+            return
+        }
+        
+        self.uiTextField = uiTextField
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            uiTextField.becomeFirstResponder()
+            /// Set this so further invocations of the `introspectTextField` modifier doesn't set focus again (this happens during dismissal for example)
+            hasBecomeFirstResponder = true
+        }
     }
     
     var formattedRecentStrings: [String] {
