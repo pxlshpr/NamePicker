@@ -64,7 +64,6 @@ public struct NamePicker: View {
     let showClearButton: Bool
     let focusImmediately: Bool
 
-    @State var uiTextField: UITextField? = nil
     @State var hasBecomeFirstResponder: Bool = false
 
     public init(
@@ -94,11 +93,10 @@ extension NamePicker {
     
     /// We're using this to focus the textfield seemingly before this view even appears (as the `.onAppear` modifier—shows the keyboard coming up with an animation
     func introspectTextField(_ uiTextField: UITextField) {
-        guard focusImmediately, self.uiTextField == nil, !hasBecomeFirstResponder else {
+        guard focusImmediately, !hasBecomeFirstResponder else {
             return
         }
         
-        self.uiTextField = uiTextField
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             uiTextField.becomeFirstResponder()
             /// Set this so further invocations of the `introspectTextField` modifier doesn't set focus again (this happens during dismissal for example)
