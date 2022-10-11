@@ -3,56 +3,6 @@ import SwiftUISugar
 import SwiftHaptics
 import Introspect
 
-struct TextFieldClearButton: ViewModifier {
-    @Binding var fieldText: String
-    
-    @State var showingClearButton: Bool
-
-    init(fieldText: Binding<String>) {
-        _fieldText = fieldText
-        _showingClearButton = State(initialValue: !fieldText.wrappedValue.isEmpty)
-    }
-    
-    func body(content: Content) -> some View {
-        HStack {
-            content
-            if showingClearButton {
-                Spacer()
-                clearButton
-            }
-        }
-        .onChange(of: fieldText) { newValue in
-            withAnimation(.interactiveSpring()) {
-                showingClearButton = !fieldText.isEmpty
-            }
-//            if !fieldText.isEmpty && !showingClearButton {
-//                withAnimation(.interactiveSpring()) {
-//                    showingClearButton = true
-//                }
-//            } else if fieldText.isEmpty && showingClearButton {
-//                withAnimation(.interactiveSpring()) {
-//                    showingClearButton = false
-//                }
-//            }
-        }
-    }
-    
-    var clearButton: some View {
-        Button {
-            fieldText = ""
-        } label: {
-            Image(systemName: "multiply.circle.fill")
-        }
-        .foregroundColor(.secondary)
-    }
-}
-
-extension View {
-    func showClearButton(_ text: Binding<String>) -> some View {
-        self.modifier(TextFieldClearButton(fieldText: text))
-    }
-}
-
 public struct NamePicker: View {
     @Binding var name: String
     
@@ -63,6 +13,9 @@ public struct NamePicker: View {
     let lowercased: Bool
     let showClearButton: Bool
     let focusImmediately: Bool
+    
+    let title: String
+    let titleDisplayMode: NavigationBarItem.TitleDisplayMode
 
     @State var hasBecomeFirstResponder: Bool = false
 
@@ -71,6 +24,8 @@ public struct NamePicker: View {
         showClearButton: Bool = false,
         focusImmediately: Bool = false,
         lowercased: Bool = false,
+        title: String = "Name",
+        titleDisplayMode: NavigationBarItem.TitleDisplayMode = .inline,
         recentStrings: [String] = [],
         presetStrings: [String])
     {
@@ -78,6 +33,8 @@ public struct NamePicker: View {
         self.recentStrings = recentStrings
         self.presetStrings = presetStrings
         self.lowercased = lowercased
+        self.title = title
+        self.titleDisplayMode = titleDisplayMode
         self.showClearButton = showClearButton
         self.focusImmediately = focusImmediately
     }
@@ -86,8 +43,8 @@ public struct NamePicker: View {
 extension NamePicker {
     public var body: some View {
         scrollView
-            .navigationTitle("Name")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(titleDisplayMode)
             .introspectTextField(customize: introspectTextField)
     }
     
@@ -119,26 +76,23 @@ extension NamePicker {
     }
 
     var scrollView: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
+        FormStyledScrollView {
+            FormStyledSection {
                 textField
-                if !recentStrings.isEmpty {
-                    Text("Frequently Used")
-                        .formSectionHeaderStyle()
+            }
+            if !recentStrings.isEmpty {
+                FormStyledSection(header: Text("Recently Used")) {
                     FlowLayout(mode: .scrollable, items: formattedRecentStrings, itemSpacing: 4) {
                         button(forSuggestion: $0)
                     }
-                    .formElementStyle()
                 }
-                Text("Presets")
-                    .formSectionHeaderStyle()
+            }
+            FormStyledSection(header: Text("Presets")) {
                 FlowLayout(mode: .scrollable, items: formattedPresetStrings, itemSpacing: 4) {
                     button(forSuggestion: $0)
                 }
-                .formElementStyle()
             }
         }
-        .background(Color(.systemGroupedBackground))
     }
 
     var textField: some View {
@@ -162,7 +116,6 @@ extension NamePicker {
                 view
                     .showClearButton($name)
             }
-            .formElementStyle()
     }
     
     func button(forSuggestion string: String) -> some View {
@@ -184,5 +137,36 @@ extension NamePicker {
     func dismissForm() {
         Haptics.feedback(style: .heavy)
         dismiss()
+    }
+}
+
+public struct NamePickerPreview: View {
+    
+    @State var showingNamePicker = false
+    @State var name: String = ""
+    
+    public init() { }
+    
+    public var body: some View {
+        Button("Pick Name") {
+            showingNamePicker = true
+        }
+        .sheet(isPresented: $showingNamePicker) {
+            NavigationView {
+                NamePicker(name: $name,
+                           showClearButton: true,
+                           lowercased: true,
+                           title: "Size Name",
+                           titleDisplayMode: .large,
+                           recentStrings: ["Recent 1", "Recent 2"],
+                           presetStrings: ["Preset 1", "Preset 2", "Preset 1", "Preset 2", "Preset 1", "Presetasdasdas 2", "Pr 1", "Preset 2", "Preset 1", "Preset 2", "Preset 1", "Preset 2"])
+            }
+        }
+    }
+}
+
+struct NamePicker_Previews: PreviewProvider {
+    static var previews: some View {
+        NamePickerPreview()
     }
 }
