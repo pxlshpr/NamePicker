@@ -12,7 +12,7 @@ public struct NamePicker: View {
     let presetStrings: [String]
     let lowercased: Bool
     let showClearButton: Bool
-    let focusImmediately: Bool
+    let focusOnAppear: Bool
     
     let title: String
     let titleDisplayMode: NavigationBarItem.TitleDisplayMode
@@ -22,7 +22,7 @@ public struct NamePicker: View {
     public init(
         name: Binding<String>,
         showClearButton: Bool = false,
-        focusImmediately: Bool = false,
+        focusOnAppear: Bool = false,
         lowercased: Bool = false,
         title: String = "Name",
         titleDisplayMode: NavigationBarItem.TitleDisplayMode = .inline,
@@ -36,7 +36,7 @@ public struct NamePicker: View {
         self.title = title
         self.titleDisplayMode = titleDisplayMode
         self.showClearButton = showClearButton
-        self.focusImmediately = focusImmediately
+        self.focusOnAppear = focusOnAppear
     }
 }
 
@@ -50,7 +50,7 @@ extension NamePicker {
     
     /// We're using this to focus the textfield seemingly before this view even appears (as the `.onAppear` modifier—shows the keyboard coming up with an animation
     func introspectTextField(_ uiTextField: UITextField) {
-        guard focusImmediately, !hasBecomeFirstResponder else {
+        guard focusOnAppear, !hasBecomeFirstResponder else {
             return
         }
         
