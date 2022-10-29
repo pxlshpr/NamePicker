@@ -1,13 +1,12 @@
 import SwiftUI
 import SwiftUISugar
 import SwiftHaptics
-import Introspect
 
 public struct NamePicker: View {
     @Binding var name: String
     
     @Environment(\.dismiss) var dismiss
-    @FocusState private var isFocused: Bool?
+    @FocusState private var isFocused: Bool
     let recentStrings: [String]
     let presetStrings: [String]
     let lowercased: Bool
@@ -16,8 +15,6 @@ public struct NamePicker: View {
     
     let title: String
     let titleDisplayMode: NavigationBarItem.TitleDisplayMode
-
-    @State var hasBecomeFirstResponder: Bool = false
 
     public init(
         name: Binding<String>,
@@ -45,19 +42,12 @@ extension NamePicker {
         scrollView
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(titleDisplayMode)
-            .introspectTextField(customize: introspectTextField)
+            .onAppear(perform: appeared)
     }
     
-    /// We're using this to focus the textfield seemingly before this view even appears (as the `.onAppear` modifier—shows the keyboard coming up with an animation
-    func introspectTextField(_ uiTextField: UITextField) {
-        guard focusOnAppear, !hasBecomeFirstResponder else {
-            return
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            uiTextField.becomeFirstResponder()
-            /// Set this so further invocations of the `introspectTextField` modifier doesn't set focus again (this happens during dismissal for example)
-            hasBecomeFirstResponder = true
+    func appeared() {
+        if focusOnAppear {
+            isFocused = true
         }
     }
     
@@ -155,6 +145,7 @@ public struct NamePickerPreview: View {
             NavigationView {
                 NamePicker(name: $name,
                            showClearButton: true,
+                           focusOnAppear: true,
                            lowercased: true,
                            title: "Size Name",
                            titleDisplayMode: .large,
