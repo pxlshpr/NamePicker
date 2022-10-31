@@ -1,13 +1,16 @@
 import SwiftUI
+import SwiftHaptics
 
 struct TextFieldClearButton: ViewModifier {
-    @Binding var fieldText: String
-    
-    @State var showingClearButton: Bool
 
-    init(fieldText: Binding<String>) {
+    @Binding var fieldText: String
+    @State var showingClearButton: Bool
+    var isFocused: FocusState<Bool>.Binding
+    
+    init(fieldText: Binding<String>, isFocused: FocusState<Bool>.Binding) {
         _fieldText = fieldText
         _showingClearButton = State(initialValue: !fieldText.wrappedValue.isEmpty)
+        self.isFocused = isFocused
     }
     
     func body(content: Content) -> some View {
@@ -36,16 +39,19 @@ struct TextFieldClearButton: ViewModifier {
     
     var clearButton: some View {
         Button {
+            Haptics.feedback(style: .rigid)
             fieldText = ""
         } label: {
-            Image(systemName: "multiply.circle.fill")
+            Image(systemName: "xmark.circle.fill")
+                .foregroundColor(Color(.quaternaryLabel))
         }
-        .foregroundColor(.secondary)
+        .opacity((isFocused.wrappedValue && !fieldText.isEmpty) ? 1 : 0)
+        .animation(.default, value: fieldText)
     }
 }
 
 extension View {
-    func showClearButton(_ text: Binding<String>) -> some View {
-        self.modifier(TextFieldClearButton(fieldText: text))
+    func showClearButton(_ text: Binding<String>, isFocused: FocusState<Bool>.Binding) -> some View {
+        self.modifier(TextFieldClearButton(fieldText: text, isFocused: isFocused))
     }
 }

@@ -104,7 +104,7 @@ extension NamePicker {
             }
             .if(showClearButton) { view in
                 view
-                    .showClearButton($name)
+                    .showClearButton($name, isFocused: $isFocused)
             }
     }
     
@@ -113,15 +113,33 @@ extension NamePicker {
             name = string
             dismissForm()
         } label: {
-            Text(string)
-              .foregroundColor(Color(.secondaryLabel))
-              .padding(.vertical, 6)
-              .padding(.horizontal, 8)
-              .background(
-                RoundedRectangle(cornerRadius: 5.0)
-                      .fill(Color(.secondarySystemFill))
-              )
+            buttonLabel(string)
         }
+    }
+    
+    func buttonLabel(_ string: String) -> some View {
+        Text(string)
+          .foregroundColor(Color(.secondaryLabel))
+          .padding(.vertical, 6)
+          .padding(.horizontal, 8)
+          .background(
+//            Capsule(style: .continuous)
+            RoundedRectangle(cornerRadius: 5.0, style: .continuous)
+                  .fill(Color(.secondarySystemFill))
+          )
+    }
+    
+    func _buttonLabel(_ string: String) -> some View {
+        ZStack {
+            Capsule(style: .continuous)
+                .foregroundColor(Color(.secondarySystemFill))
+            Text(string)
+                .foregroundColor(.primary)
+                .frame(height: 25)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 5)
+        }
+        .fixedSize(horizontal: true, vertical: true)
     }
     
     func dismissForm() {
