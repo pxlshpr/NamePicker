@@ -12,12 +12,14 @@ public struct NamePicker: View {
     let lowercased: Bool
     let showClearButton: Bool
     let focusOnAppear: Bool
+    let showTextField: Bool
     
     let title: String
     let titleDisplayMode: NavigationBarItem.TitleDisplayMode
 
     public init(
         name: Binding<String>,
+        showTextField: Bool = true,
         showClearButton: Bool = false,
         focusOnAppear: Bool = false,
         lowercased: Bool = false,
@@ -27,6 +29,7 @@ public struct NamePicker: View {
         presetStrings: [String])
     {
         _name = name
+        self.showTextField = showTextField
         self.recentStrings = recentStrings
         self.presetStrings = presetStrings
         self.lowercased = lowercased
@@ -67,8 +70,10 @@ extension NamePicker {
 
     var scrollView: some View {
         FormStyledScrollView {
-            FormStyledSection {
-                textField
+            if showTextField {
+                FormStyledSection {
+                    textField
+                }
             }
             if !recentStrings.isEmpty {
                 FormStyledSection(header: Text("Recently Used")) {
